@@ -4,4 +4,5 @@ ADD requirements.txt .
 RUN pip install -r requirements.txt
 ADD dashboard.py .
 ADD settings.py .
-CMD [ "python3", "dashboard.py" ]
+RUN apt-get update && apt-get install -y gunicorn
+CMD [ "gunicorn", "dashboard:server" ]
