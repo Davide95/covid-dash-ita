@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
+from functools import lru_cache
 
 # Download data
 data = pd.read_csv(settings.CSV_URL, index_col='data', parse_dates=True,
@@ -158,6 +159,7 @@ app.layout = html.Div(children=[
 ])
 
 
+@lru_cache
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
 def render_content(tab):
