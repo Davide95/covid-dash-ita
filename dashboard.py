@@ -135,7 +135,7 @@ plots = {
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server)
 
-app.title = 'Situazione COVID-19 in italia'
+app.title = 'Situazione COVID-19 in Italia'
 app.layout = html.Div(children=[
     html.H1(app.title),
     dcc.Tabs(id='tabs', value='totp', children=[
@@ -150,7 +150,10 @@ app.layout = html.Div(children=[
         html.P(['Fonte dati: ', html.A(settings.REPO_DATA, href=settings.REPO_DATA),
                 ' (', html.A(
                     'CC-BY-4.0', href='https://creativecommons.org/licenses/by/4.0/deed.it'), ')',
-                '; Segnala un errore: ', html.A(settings.REPO_CODE, href=settings.REPO_CODE)]),
+                '. Codice app: ', html.A(
+                    settings.REPO_CODE, href=settings.REPO_CODE),
+                ' (', html.A(
+            'GNU AGPL', href='https://raw.githubusercontent.com/Davide95/covid-dash-ita/master/LICENSE'), ')']),
     ])
 ])
 
