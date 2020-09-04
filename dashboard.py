@@ -150,21 +150,10 @@ plots = {
 
 # Run GUI
 server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server, external_scripts=[
-                'https://www.googletagmanager.com/gtag/js?id=UA-177060824-1'])
+app = dash.Dash(__name__, server=server)
 
 app.title = 'Situazione COVID-19 in Italia'
 app.layout = html.Div(children=[
-    html.Embed('''<!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-177060824-1"></script>
-    <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'UA-177060824-1');
-    </script>
-    '''),
     html.H1(app.title),
     dcc.Tabs(id='tabs', value='totp', children=[
         dcc.Tab(label='Totale positivi', value='totp'),
