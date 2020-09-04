@@ -175,10 +175,11 @@ app.layout = html.Div(children=[
 ])
 
 
-@lru_cache
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
+@lru_cache
 def render_content(tab):
+    print('UP')
     return plots[tab]
 
 
