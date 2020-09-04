@@ -14,8 +14,9 @@ from threading import Timer
 import sys
 from datetime import datetime
 
-
 # Reboot the container every day
+
+
 def killme():
     sys.exit(0)
 
@@ -24,8 +25,8 @@ today = datetime.today()
 killdate = today.replace(day=today.day+1, hour=0,
                          minute=0, second=0, microsecond=0)
 delta_t = killdate - today
-print(delta_t)
 Timer(delta_t.seconds, killme).start()
+printdate = killdate.isoformat(' ', 'hours')
 
 
 # Download data
@@ -150,11 +151,31 @@ plots = {
 
 # Run GUI
 server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server)
+app = dash.Dash(__name__, server=server,
+                external_stylesheets=[
+                    'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'
+                ])
 
 app.title = 'Situazione COVID-19 in Italia'
 app.layout = html.Div(children=[
-    html.H1(app.title),
+    html.Nav(className='navbar navbar-light bg-light', children=[
+        html.H1(app.title, className='navbar-brand'),
+        html.Span(className='navbar-text', children=[
+            html.A(className='badge badge-light', children='Fonte dati',
+                   href=settings.REPO_DATA),
+            html.Span(' '),
+            html.A(className='badge badge-light', children='(CC-BY-4.0)',
+                   href='https://creativecommons.org/licenses/by/4.0/deed.it')
+        ]),
+        html.Span(className='navbar-text', children=[
+            html.A(className='badge badge-light', children='Codice sorgente',
+                   href=settings.REPO_CODE),
+            html.Span(' '),
+            html.A(className='badge badge-light', children='(GNU AGPL)',
+                   href='https://raw.githubusercontent.com/Davide95/covid-dash-ita/master/LICENSE')
+        ]),
+        html.Span('Prossimo aggiornamento a mezzanotte.', className='navbar-text')
+    ]),
     dcc.Tabs(id='tabs', value='totp', children=[
         dcc.Tab(label='Totale positivi', value='totp'),
         dcc.Tab(label='Nuovi positivi', value='np'),
@@ -162,22 +183,13 @@ app.layout = html.Div(children=[
         dcc.Tab(label='Posti occupati in terapia intensiva', value='ti'),
         dcc.Tab(label='Numero di morti', value='nm')
     ]),
-    html.Div(id='tabs-content'),
-    html.Footer([
-        html.P(['Fonte dati: ', html.A(settings.REPO_DATA, href=settings.REPO_DATA),
-                ' (', html.A(
-                    'CC-BY-4.0', href='https://creativecommons.org/licenses/by/4.0/deed.it'), ')',
-                '. Codice app: ', html.A(
-                    settings.REPO_CODE, href=settings.REPO_CODE),
-                ' (', html.A(
-            'GNU AGPL', href='https://raw.githubusercontent.com/Davide95/covid-dash-ita/master/LICENSE'), ')']),
-    ])
+    html.Div(id='tabs-content')
 ])
 
 
-@app.callback(Output('tabs-content', 'children'),
-              [Input('tabs', 'value')])
-@lru_cache
+@ app.callback(Output('tabs-content', 'children'),
+               [Input('tabs', 'value')])
+@ lru_cache
 def render_content(tab):
     print(tab, 'now in cache.')
     return plots[tab]
