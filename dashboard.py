@@ -10,6 +10,23 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 from functools import lru_cache
+from threading import Timer
+import sys
+from datetime import datetime
+
+
+# Reboot the container every day
+def killme():
+    sys.exit(0)
+
+
+today = datetime.today()
+killdate = today.replace(day=today.day+1, hour=0,
+                         minute=0, second=0, microsecond=0)
+delta_t = killdate - today
+print(delta_t)
+Timer(delta_t.seconds, killme).start()
+
 
 # Download data
 data = pd.read_csv(settings.CSV_URL, index_col='data', parse_dates=True,
@@ -131,13 +148,23 @@ plots = {
     'nm': dcc.Graph(id='nm', figure=nm_fig)
 }
 
-
 # Run GUI
 server = flask.Flask(__name__)
-app = dash.Dash(__name__, server=server)
+app = dash.Dash(__name__, server=server, external_scripts=[
+                'https://www.googletagmanager.com/gtag/js?id=UA-177060824-1'])
 
 app.title = 'Situazione COVID-19 in Italia'
 app.layout = html.Div(children=[
+    html.Embed('''<!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-177060824-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-177060824-1');
+    </script>
+    '''),
     html.H1(app.title),
     dcc.Tabs(id='tabs', value='totp', children=[
         dcc.Tab(label='Totale positivi', value='totp'),
