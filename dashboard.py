@@ -11,22 +11,19 @@ import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 from functools import lru_cache
 from threading import Timer
-import sys
+import os
 from datetime import datetime
 
+
 # Reboot the container every day
-
-
 def killme():
-    sys.exit(0)
-
+    os._exit(os.EX_OK)
 
 today = datetime.today()
 killdate = today.replace(day=today.day+1, hour=0,
                          minute=0, second=0, microsecond=0)
 delta_t = killdate - today
 Timer(delta_t.seconds, killme).start()
-printdate = killdate.isoformat(' ', 'hours')
 
 
 # Download data
