@@ -13,7 +13,11 @@ from functools import lru_cache
 from threading import Timer
 import os
 from datetime import datetime
+import locale
 
+
+# Set locale
+locale.setlocale(locale.LC_ALL, 'it_IT')
 
 # Reboot the container every day
 def killme():
@@ -139,11 +143,11 @@ nm_fig.update_layout(bargap=0)
 
 # Set of plots
 plots = {
-    'totp': dcc.Graph(id='totp', figure=totp_fig),
-    'np': dcc.Graph(id='np', figure=np_fig),
-    'vtp': dcc.Graph(id='vtp', figure=vtp_fig),
-    'ti': dcc.Graph(id='ti', figure=ti_fig),
-    'nm': dcc.Graph(id='nm', figure=nm_fig)
+    'totp': dcc.Graph(id='totp', figure=totp_fig, config=dict(locale='it')),
+    'np': dcc.Graph(id='np', figure=np_fig, config=dict(locale='it')),
+    'vtp': dcc.Graph(id='vtp', figure=vtp_fig, config=dict(locale='it')),
+    'ti': dcc.Graph(id='ti', figure=ti_fig, config=dict(locale='it')),
+    'nm': dcc.Graph(id='nm', figure=nm_fig, config=dict(locale='it'))
 }
 
 # Run GUI
@@ -151,6 +155,9 @@ server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server,
                 external_stylesheets=[
                     'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'
+                ],
+                external_scripts=[
+                    'https://cdn.plot.ly/plotly-locale-it-1.55.2.js'
                 ])
 
 app.title = 'Situazione COVID-19 in Italia'
