@@ -13,11 +13,7 @@ from functools import lru_cache
 from threading import Timer
 import os
 from datetime import datetime
-import locale
 
-
-# Set locale
-locale.setlocale(locale.LC_ALL, 'it_IT')
 
 # Reboot the container every day
 def killme():
