@@ -20,8 +20,16 @@ def killme():
     os._exit(os.EX_OK)
 
 today = datetime.today()
-killdate = today.replace(day=today.day+1, hour=0,
+
+try:
+    date = today.replace(day=today.day+1, hour=0,
                          minute=0, second=0, microsecond=0)
+except ValueError as _:
+    killdate = today.replace(day=1, hour=0,
+                         minute=0, second=0, microsecond=0)
+
+
+
 delta_t = killdate - today
 Timer(delta_t.seconds, killme).start()
 
