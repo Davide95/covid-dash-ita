@@ -37,7 +37,7 @@ Timer(delta_t.seconds, killme).start()
 # Download data
 data = pd.read_csv(settings.CSV_URL, index_col='data', parse_dates=True,
                    usecols=['nuovi_positivi', 'totale_positivi', 'variazione_totale_positivi',
-                            'terapia_intensiva', 'deceduti', 'data', 'stato'],)
+                            'terapia_intensiva', 'deceduti', 'data', 'stato', 'tamponi'],)
 assert((data['stato'] == 'ITA').all())
 
 
@@ -47,6 +47,7 @@ nm_diff = np.insert(nm[1:] - nm[:-1], obj=0, values=nm[0])
 data['variazione_deceduti'] = nm_diff
 
 vtp_avg = data['variazione_totale_positivi'].resample('W').mean()
+tamp_avg = data['tamponi'].resample('W').mean()
 np_avg = data['nuovi_positivi'].resample('W').mean()
 totp_avg = data['totale_positivi'].resample('W').mean()
 ti_avg = data['terapia_intensiva'].resample('W').mean()
@@ -72,6 +73,24 @@ totp_fig.add_trace(
         name='Media settimanale'
     ))
 totp_fig.update_layout(bargap=0)
+
+# Tamponi
+tamp_fig = go.Figure()
+tamp_fig.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=data['tamponi'],
+        name='Tamponi'
+    ))
+tamp_fig.update_traces(mode='lines+markers',
+                       marker=dict(size=5))
+tamp_fig.add_trace(
+    go.Bar(
+        x=tamp_avg.index,
+        y=tamp_avg.values,
+        name='Media settimanale'
+    ))
+tamp_fig.update_layout(bargap=0)
 
 # Nuovi positivi
 np_fig = go.Figure()
@@ -148,6 +167,7 @@ nm_fig.update_layout(bargap=0)
 # Set of plots
 plots = {
     'totp': dcc.Graph(id='totp', figure=totp_fig, config=dict(locale='it')),
+    'tamp': dcc.Graph(id='totp', figure=tamp_fig, config=dict(locale='it')),
     'np': dcc.Graph(id='np', figure=np_fig, config=dict(locale='it')),
     'vtp': dcc.Graph(id='vtp', figure=vtp_fig, config=dict(locale='it')),
     'ti': dcc.Graph(id='ti', figure=ti_fig, config=dict(locale='it')),
@@ -186,6 +206,7 @@ app.layout = html.Div(children=[
     ]),
     dcc.Tabs(id='tabs', value='totp', children=[
         dcc.Tab(label='Totale positivi', value='totp'),
+        dcc.Tab(label='Tamponi', value='tamp'),
         dcc.Tab(label='Nuovi positivi', value='np'),
         dcc.Tab(label='Variazione positivi', value='vtp'),
         dcc.Tab(label='Posti occupati in terapia intensiva', value='ti'),
