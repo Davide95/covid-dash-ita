@@ -22,11 +22,15 @@ def killme():
 today = datetime.today()
 
 try:
-    date = today.replace(day=today.day+1, hour=0,
+    killdate = today.replace(day=today.day+1, hour=0,
                          minute=0, second=0, microsecond=0)
 except ValueError as _:
-    killdate = today.replace(day=1, hour=0,
+    try:
+        killdate = today.replace(month=today.month+1, day=1, hour=0,
                          minute=0, second=0, microsecond=0)
+    except ValueError as _:
+        killdate = today.replace(year=today.year+1, month=1, day=1, hour=0,
+                         minute=0, second=0, microsecond=0
 
 
 
