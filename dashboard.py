@@ -197,7 +197,7 @@ app = dash.Dash(__name__, server=server,
                     'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'
                 ],
                 external_scripts=[
-                    'https://cdn.plot.ly/plotly-locale-it-latest.js'
+                    'https://cdn.plot.ly/plotly-locale-it-2.8.3.js'
                 ])
 
 app.title = 'Situazione COVID-19 in Italia'
