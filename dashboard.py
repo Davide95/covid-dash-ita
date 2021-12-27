@@ -3,8 +3,8 @@ from datetime import timedelta
 import settings
 import flask
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -19,19 +19,19 @@ from datetime import datetime
 def killme():
     os._exit(os.EX_OK)
 
+
 today = datetime.today()
 
 try:
     killdate = today.replace(day=today.day+1, hour=0,
-                         minute=0, second=0, microsecond=0)
+                             minute=0, second=0, microsecond=0)
 except ValueError as _:
     try:
         killdate = today.replace(month=today.month+1, day=1, hour=0,
-                         minute=0, second=0, microsecond=0)
+                                 minute=0, second=0, microsecond=0)
     except ValueError as _:
         killdate = today.replace(year=today.year+1, month=1, day=1, hour=0,
-                         minute=0, second=0, microsecond=0)
-
+                                 minute=0, second=0, microsecond=0)
 
 
 delta_t = killdate - today
@@ -151,21 +151,21 @@ nm_fig.update_layout(bargap=0)
 
 # Set of plots
 plots = {
+    'ti': dcc.Graph(id='ti', figure=ti_fig, config=dict(locale='it')),
+    'nm': dcc.Graph(id='nm', figure=nm_fig, config=dict(locale='it')),
     'totp': dcc.Graph(id='totp', figure=totp_fig, config=dict(locale='it')),
     'np': dcc.Graph(id='np', figure=np_fig, config=dict(locale='it')),
-    'vtp': dcc.Graph(id='vtp', figure=vtp_fig, config=dict(locale='it')),
-    'ti': dcc.Graph(id='ti', figure=ti_fig, config=dict(locale='it')),
-    'nm': dcc.Graph(id='nm', figure=nm_fig, config=dict(locale='it'))
+    'vtp': dcc.Graph(id='vtp', figure=vtp_fig, config=dict(locale='it'))
 }
 
 # Run GUI
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server,
                 external_stylesheets=[
-                    'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'
+                    'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'
                 ],
                 external_scripts=[
-                    'https://cdn.plot.ly/plotly-locale-it-1.55.2.js'
+                    'https://cdn.plot.ly/plotly-locale-it-latest.js'
                 ])
 
 app.title = 'Situazione COVID-19 in Italia'
@@ -186,22 +186,23 @@ app.layout = html.Div(children=[
             html.A(className='badge badge-light', children='(GNU AGPL)',
                    href='https://raw.githubusercontent.com/Davide95/covid-dash-ita/master/LICENSE')
         ]),
-        html.Span('Prossimo aggiornamento a mezzanotte.', className='navbar-text')
+        html.Span('Prossimo aggiornamento a mezzanotte.',
+                  className='navbar-text')
     ]),
-    dcc.Tabs(id='tabs', value='totp', children=[
+    dcc.Tabs(id='tabs', value='ti', children=[
+        dcc.Tab(label='Posti occupati in terapia intensiva', value='ti'),
+        dcc.Tab(label='Numero di morti', value='nm'),
         dcc.Tab(label='Totale positivi', value='totp'),
         dcc.Tab(label='Nuovi positivi', value='np'),
         dcc.Tab(label='Variazione positivi', value='vtp'),
-        dcc.Tab(label='Posti occupati in terapia intensiva', value='ti'),
-        dcc.Tab(label='Numero di morti', value='nm')
     ]),
     html.Div(id='tabs-content')
 ])
 
 
-@ app.callback(Output('tabs-content', 'children'),
-               [Input('tabs', 'value')])
-@ lru_cache
+@app.callback(Output('tabs-content', 'children'),
+              [Input('tabs', 'value')])
+@lru_cache
 def render_content(tab):
     print(tab, 'now in cache.')
     return plots[tab]

@@ -7,3 +7,4 @@ RUN pip install gunicorn
 ADD dashboard.py .
 ADD settings.py .
 CMD [ "gunicorn", "dashboard:server", "-b 0.0.0.0:8080", "--access-logfile", "gunicorn.log" ]
+  
