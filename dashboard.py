@@ -67,15 +67,24 @@ totp_fig.add_trace(
         y=data['totale_positivi'],
         name='Dati giornalieri'
     ))
-totp_fig.update_traces(mode='lines+markers',
-                       marker=dict(size=5))
+
+totp_fig.update_traces(
+    mode='lines+markers',
+    marker=dict(size=5)
+)
+
 totp_fig.add_trace(
     go.Bar(
         x=totp_avg.index,
         y=totp_avg.values,
         name='Media settimanale'
     ))
-totp_fig.update_layout(bargap=0)
+totp_fig.update_layout(
+    bargap=0,
+    legend=dict(
+        title=None, orientation="h", xanchor="center", x=0.5
+    )
+)
 
 # Nuovi positivi
 np_fig = go.Figure()
@@ -93,7 +102,12 @@ np_fig.add_trace(
         y=np_avg.values,
         name='Media settimanale'
     ))
-np_fig.update_layout(bargap=0)
+np_fig.update_layout(
+    bargap=0,
+    legend=dict(
+        title=None, orientation="h", xanchor="center", x=0.5
+    )
+)
 
 # Variazione totale positivi
 vtp_fig = go.Figure()
@@ -111,7 +125,12 @@ vtp_fig.add_trace(
         y=vtp_avg.values,
         name='Media settimanale'
     ))
-vtp_fig.update_layout(bargap=0)
+vtp_fig.update_layout(
+    bargap=0,
+    legend=dict(
+        title=None, orientation="h", xanchor="center", x=0.5
+    )
+)
 
 # Terapia intensiva
 ti_fig = go.Figure()
@@ -129,7 +148,12 @@ ti_fig.add_trace(
         y=ti_avg.values,
         name='Media settimanale'
     ))
-ti_fig.update_layout(bargap=0)
+ti_fig.update_layout(
+    bargap=0,
+    legend=dict(
+        title=None, orientation="h", xanchor="center", x=0.5
+    )
+)
 
 # Deceduti
 nm_fig = go.Figure()
@@ -147,7 +171,12 @@ nm_fig.add_trace(
         y=nm_avg.values,
         name='Media settimanale'
     ))
-nm_fig.update_layout(bargap=0)
+nm_fig.update_layout(
+    bargap=0,
+    legend=dict(
+        title=None, orientation="h", xanchor="center", x=0.5
+    )
+)
 
 # Set of plots
 plots = {
@@ -161,6 +190,9 @@ plots = {
 # Run GUI
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server,
+                meta_tags=[
+                    {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+                ],
                 external_stylesheets=[
                     'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css'
                 ],
@@ -171,26 +203,28 @@ app = dash.Dash(__name__, server=server,
 app.title = 'Situazione COVID-19 in Italia'
 app.layout = html.Div(children=[
     html.Nav(className='navbar navbar-light bg-light', children=[
-        html.H1(app.title, className='navbar-brand'),
-        html.Span(className='navbar-text', children=[
-            html.A(className='badge badge-light', children='Fonte dati',
-                   href=settings.REPO_DATA),
-            html.Span(' '),
-            html.A(className='badge badge-light', children='(CC-BY-4.0)',
-                   href='https://creativecommons.org/licenses/by/4.0/deed.it')
-        ]),
-        html.Span(className='navbar-text', children=[
-            html.A(className='badge badge-light', children='Codice sorgente',
-                   href=settings.REPO_CODE),
-            html.Span(' '),
-            html.A(className='badge badge-light', children='(GNU AGPL)',
-                   href='https://raw.githubusercontent.com/Davide95/covid-dash-ita/master/LICENSE')
-        ]),
-        html.Span('Prossimo aggiornamento a mezzanotte.',
-                  className='navbar-text')
+        html.Div(className='container-fluid', children=[
+            html.H1(app.title, className='navbar-brand'),
+            html.Span(className='navbar-text', children=[
+                html.A(className='badge badge-light', children='Fonte dati',
+                       href=settings.REPO_DATA),
+                html.Span(' '),
+                html.A(className='badge badge-light', children='(CC-BY-4.0)',
+                       href='https://creativecommons.org/licenses/by/4.0/deed.it')
+            ]),
+            html.Span(className='navbar-text', children=[
+                html.A(className='badge badge-light', children='Codice sorgente',
+                       href=settings.REPO_CODE),
+                html.Span(' '),
+                html.A(className='badge badge-light', children='(GNU AGPL)',
+                       href='https://raw.githubusercontent.com/Davide95/covid-dash-ita/master/LICENSE')
+            ]),
+            html.Span('Prossimo aggiornamento a mezzanotte.',
+                      className='navbar-text')
+        ])
     ]),
     dcc.Tabs(id='tabs', value='ti', children=[
-        dcc.Tab(label='Posti occupati in terapia intensiva', value='ti'),
+        dcc.Tab(label='Terapia intensiva', value='ti'),
         dcc.Tab(label='Numero di morti', value='nm'),
         dcc.Tab(label='Totale positivi', value='totp'),
         dcc.Tab(label='Nuovi positivi', value='np'),
@@ -200,9 +234,9 @@ app.layout = html.Div(children=[
 ])
 
 
-@app.callback(Output('tabs-content', 'children'),
-              [Input('tabs', 'value')])
-@lru_cache
+@ app.callback(Output('tabs-content', 'children'),
+               [Input('tabs', 'value')])
+@ lru_cache
 def render_content(tab):
     print(tab, 'now in cache.')
     return plots[tab]
